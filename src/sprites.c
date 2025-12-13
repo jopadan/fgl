@@ -11,9 +11,7 @@ Contents:
 #include "fgl.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "external/stb_image.h"     // image loading
-#include <stdio.h>                  // printf()
-#include <GL/gl.h>
+#include "stb_image.h"     // image loading
 
 // -------------------
 // Implementations
@@ -28,7 +26,7 @@ fgl_sprite fgl_load_sprite(const char *path)
     unsigned char *data = stbi_load(path, &width, &height, &bpp, 4);
 
     if (data == NULL) {
-        printf("FGL ERROR: failed to load sprite. Maybe check path?\n");
+        printf("[FGL][ERR] failed to load sprite. Maybe check path?\n");
     }
 
     // Convert loaded data into OpenGL texture
@@ -49,7 +47,7 @@ fgl_sprite fgl_load_sprite(const char *path)
     sprite.width = width;
     sprite.height = height;
 
-    printf("FGL INFO: generated sprite of ID %d, Size %dx%d\n", sprite.ID, sprite.width, sprite.height);
+    printf("[FGL][NFO] generated sprite of ID %d, Size %dx%d\n", sprite.ID, sprite.width, sprite.height);
     return sprite;
 }
 
@@ -57,7 +55,7 @@ fgl_sprite fgl_load_sprite(const char *path)
 void fgl_unload_sprite(fgl_sprite sprite)
 {
     glDeleteTextures(1, &sprite.ID);
-    printf("FGL INFO: unloaded sprite of ID %d\n", sprite.ID);
+    printf("[FGL][NFO] unloaded sprite of ID %d\n", sprite.ID);
 }
 
 // Draw a sprite

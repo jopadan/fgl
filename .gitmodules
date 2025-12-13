@@ -1,0 +1,6 @@
+[submodule "include/external/fontstash"]
+	path = include/external/fontstash
+	url = https://github.com/memononen/fontstash/
+[submodule "include/external/stb"]
+	path = include/external/stb
+	url = https://github.com/nothings/stb

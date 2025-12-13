@@ -26,7 +26,7 @@ int main()
     }
 
     fgl_close_window();
-    return 0;
+    exit(EXIT_SUCCESS);
 }
 
 -- Licensed under zlib
@@ -35,21 +35,78 @@ int main()
 #ifndef FGL_H
 #define FGL_H
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>	// boolean type
+#include <stdalign.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <time.h>
+#include <signal.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/utsname.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glcorearb.h>
+#if defined(_WIN32)
+    #include "include/GLFW/glfw3.h"
+#else
+    #include <GLFW/glfw3.h>
+#endif
+
+#if   defined(_MSC_VER)
+#define FGL_ALIGN(x) __declspec((align((x))))
+#elif defined(__GNUC__) || defined(__clang__)
+#define FGL_ALIGN(x) __attribute__((aligned((x))))
+#else
+#define FGL_ALIGN(x)
+#endif
 
 // ------- Types --------
-typedef struct fgl_color {
+typedef unsigned char byte;
+
+typedef struct FGL_ALIGN(16) fgl_color {
     unsigned int r;
     unsigned int g;
     unsigned int b;
     unsigned int a;
 } fgl_color;
 
-typedef struct fgl_vec2d {
+typedef struct FGL_ALIGN(4) fgl_vec4ub {
+union {
+    struct { byte r,g,b,a; };
+    struct { byte x,y,z,w; };
+};
+} fgl_vec4ub;
+
+typedef struct FGL_ALIGN(8) fgl_vec2i {
+    int x, y;
+} fgl_vec2i;
+
+typedef struct fgl_vec3i {
+    int x, y, z;
+} fgl_vec3i;
+
+typedef struct FGL_ALIGN(16) fgl_vec4i {
+    int x, y, z, w;
+} fgl_vec4i;
+
+typedef struct FGL_ALIGN(8) fgl_vec2d {
     float x, y;
 } fgl_vec2d;
 
-typedef struct fgl_rec {
+typedef struct fgl_vec3d {
+    float x, y, z;
+} fgl_vec3d;
+
+typedef struct FGL_ALIGN(16) fgl_vec4d {
+    float x, y, z, w;
+} fgl_vec4d;
+
+typedef struct FGL_ALIGN(16) fgl_rec {
     float x, y;
     int w, h;
 } fgl_rec;
@@ -64,7 +121,6 @@ typedef struct fgl_sprite {
     int width, height;
 } fgl_sprite;
 
-typedef unsigned char byte;
 typedef int fgl_font;
 
 enum {
@@ -191,10 +247,21 @@ enum {
 // Functions declarations
 
 // ------ Core -------
+const char*   fgl_sysinfo_string();                                                                 // System information string
+const char*   fgl_time_string();                                                                    // Time string
 // Window functions
-int fgl_open_window(int w, int h, const char *title);                                               // Initialize OpenGL context
-void fgl_close_window();                                                                            // Close the OpenGL context
-bool fgl_is_window_closed();                                                                        // Check if the ESC key or close button is pressed
+int           fgl_open_window(int w, int h, const char *title);                                     // Initialize OpenGL context
+void          fgl_close_window();                                                                   // Close the OpenGL context
+fgl_vec2i     fgl_resize_window(int w, int h);                                                      // Set window size of OpenGL context
+bool          fgl_update_window();                                                                  // Updates frames and checks if window is closed
+fgl_vec2i     fgl_get_window_size();                                                                // Get window size of OpenGL context
+bool          fgl_is_window_closed();                                                               // Check if the ESC key or close button is pressed
+bool          fgl_is_window_resized();                                                              // Check if window has been resized
+bool          fgl_window_flip_vsync();                                                              // Toggle Vsync on/off
+unsigned long fgl_window_frames();                                                                  // Returns total frames rendered
+unsigned long fgl_window_fps();                                                                     // Returns frames per second
+const char*   fgl_window_fps_string();                                                              // Returns frames per second converted to C string
+fgl_vec4ub*   fgl_window_screenshot(const char *path);                                              // Returns a screenshot as RGBA8888 using the current resolution
 
 // Drawing functions
 void fgl_start_drawing();                                                                           // Clear buffers
