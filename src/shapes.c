@@ -13,9 +13,6 @@ Contents:
 
 #include "fgl.h"
 
-#include <GL/gl.h>      // shapes rendering
-#include <math.h>       // sin(), cos()
-
 // -------------------
 // Implementations
 
